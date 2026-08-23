@@ -25,7 +25,7 @@ jobs:
           pip install requests
 
       - name: M3U Playlist generieren
-        run: python update_playlist.py
+        run: python krautsalat.py
 
       - name: Änderungen committen und pushen
         run: |
