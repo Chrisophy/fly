@@ -11,8 +11,8 @@ class HamSter:
         self.cache = {}
         self.vec = "Y6M13YYOKehfrcCIQMb3uoR7Y2zp0al7nyl5rDhJ32eyEU1/4QzKdWytuJGh0bKcTPDL0fvRfvlCiy8JEnTa7/uEa2z0c716Hr5Ud4gtVVABVE37blNal5U9gPtmpc0N6MDayhlNf3raqEe9h5nuSaYuy0VN6j4LwLcOh7Y5WRi0c3J8Hq7L/t61/T6GX0jbScRE1eOGRkWwGczAh+TiB0PrT1XZrZUde0+hoGcGPB9M+j/j2V41IEa5ouSXwpY9ANtMeBa/oKWxqyR2M9KiphJlLXrZIE/QUcJh0d3xETdenhnLpGlYwQSERj2sc+hpqLVMagT26AlhhYHMT1xGY2GsPBog/QLd+Fck8r3NmdYxpXZ25QwLDtIq8SGhSt3j5DEOjU7z4mfBKDnH7B6ncckAVLMikVqcbbM8NFUgJIkUaI2IfcBcrcgr4l3dBH3djXa+OWEksQQ8xPRuMSxDaUqTGsz2Qyhpx1Ldpe2Zswq9U4xIimBvYw+BSOTDU3zKg9OTbAN4AcyVLZbeWWUEd0WcNYP4wLencUvrDzt/Rsb6o4n9VVkO9QjmQQgTGnlo9QkOM4J4UJzidwXHJRAXATwhEgk0t2Y+7HWuV3mPmrVHgWigoK+beWznJEGu9cyKkzH0qyCYFmOPpWUTIg/qr6NSrboT3brOCQSbb3ES04V7FjRGveeNmkrlkHahwtnEX4Dy2VpL47SdDxcK1i6IdqgnXMKJn/oDY8GomodTRATpYvNfjCaAuyeMFKFyX2XyhEv5Kzmi+Z2Z8dxhB+SAuDhIdswva7hU85unLCBzII2PId1+2nQreTyMO92J5lqf6NgvhAV+1xFkYX/olyN19XRcxRGPmo6k9NKy68G+veImBLKQpHhPPUOmQJWSuZpfGAgTSr50wfgXnOpotYB4mwZc7z5TOA2ehqYodCPwFq6sOOxzg8h5nYqlqKsFvXFyKbMZZCu1QEyRRt12qRh/quLTrFamEkXIC4TSnX/Bq0poO0Q+C2k1Qg+TneONKEyCc9+JxjQYZT0Y8waLFh37Xp7k/Gk1KDByCxwC538H3Ge8jaPl0lGnmEJouUlYNQjd2WjDpjaeDH4fnGYyQR1x4J2amqp0o5mt5Hm69F0VNPf/7ZPSl+4KGTkwzxmdHboZiwFCio2soBVVv4+rZ9IhqzaQjCVWylaF3e7eHKaYE5qAIr9fwjMVmIbXR4WX8a4ni1G7CLCjJk1lGuY3En0cZ6U3Oxg9++w+12O4nX4eNQ9pEKHYLDWKe0j7rg+iM8CaG1ikrfvGtvzZQ33x94JejwDdbcxLorZbWIhemOONBH2AtTgPaFW78drlmU603RZuxCU7f8t8JTXLfvVHXcc4nQiVFZlWRDLR6xHTflh/YfH5SZ/3G/HCXtGJyvGsSd693Q9irixaNjlAmTCEoXnwimshgEoliaUwj5MjBXR9pPY0JGMPR80as86S0FxO/ZVavSmNsC4Zm41fBNqbcvuXXQkb7zt+ZHBmx4yW/NCrXYUHIcVS3RSPCvZCaLMT9mXw+YxibCWqWk8cRwTx0/1sLjX5oz02+qhmC3s7G23OvsAJOThyL/cp9twA5nFQT01hjqPFhDTNP3Nr5bf7Fw/f3/Jsbew0xTz6p2XthzRTBCZJKZd2uoW20ZwNs2DnMMNh1yZER40KjqQrusxUn6qsU9vKTG+dks920JgV4ZrZY/JslKH66fXmSL3GEkNTDIIUdoBpYZtNG6JZKHOm+67nlxe4ogisbCqnfbhjL4iGTfNKJv+cmyTujH79IBG7mimalo49MuZr9aKGclq7fYTcGGMTEYyiYuWCkENknXtdKNLlo67RuwfF5torj5jy9BQQaMQWf+nrPwdtrclr7Ad6tmJywZFAQ/hD2oGqlXXQ8Vqr+8S01P1KoNof+utH0gLm9eOG47XXT+NkeDTof5R5WA=="
         self.user_agent = "MediaHubMX/2"
-        self.catalog_url = "https://vavoo.cc/vto-cluster/mediahubmx-catalog.json"
-        self.resolve_url = "https://vavoo.cc/vto-cluster/mediahubmx-resolve.json"
+        self.catalog_url = "https://vavoo.to/vto-cluster/mediahubmx-catalog.json"
+        self.resolve_url = "https://vavoo.to/vto-cluster/mediahubmx-resolve.json"
 
     def get_auth_signature(self):
         now = int(time.time() * 1000)
@@ -74,7 +74,7 @@ if __name__ == "__main__":
         orig_url = ch.get('url')
         if not orig_url:
             return None
-        resolved = core.resolve_stream(orig_url) if "vavoo.cc" in orig_url else orig_url
+        resolved = core.resolve_stream(orig_url) if "vavoo.to" in orig_url else orig_url
         if resolved:
             return f"#EXTINF:-1,{name}\n{resolved}"
         return None
