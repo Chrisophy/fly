@@ -25,6 +25,8 @@
     </script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js für flüssige Stream-Wiedergabe -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #111827; }
@@ -142,6 +144,42 @@
         </main>
     </div>
 
+    <!-- Video Modal / Overlay Player -->
+    <div id="video-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-2 sm:p-4">
+        <div class="w-full max-w-5xl bg-dark-800 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
+            <!-- Modal Header -->
+            <div class="bg-dark-700 px-4 py-3 flex items-center justify-between border-b border-gray-700">
+                <div class="flex items-center space-x-3">
+                    <div id="modal-logo-wrap" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden">
+                        <i class="fa-solid fa-tv text-gray-400 text-sm"></i>
+                    </div>
+                    <div>
+                        <h3 id="modal-title" class="font-bold text-sm text-white">Sender Name</h3>
+                        <p id="modal-category" class="text-xs text-gray-400">Kategorie</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                    <button id="modal-fullscreen-btn" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-dark-600 transition-colors" title="Vollbild">
+                        <i class="fa-solid fa-expand text-lg"></i>
+                    </button>
+                    <button id="close-modal-btn" class="text-gray-400 hover:text-white p-2 rounded-lg hover:bg-dark-600 transition-colors" title="Schließen">
+                        <i class="fa-solid fa-xmark text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            <!-- Video Container -->
+            <div class="relative aspect-video bg-black flex items-center justify-center">
+                <video id="modal-video" class="w-full h-full object-contain" controls autoplay playsinline></video>
+                <div id="modal-loader" class="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
+                    <div class="flex flex-col items-center space-y-3">
+                        <div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+                        <span class="text-xs text-gray-300 font-medium">Stream wird geladen...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Footer -->
     <footer class="bg-dark-800 border-t border-gray-800 py-4 mt-8 text-center text-xs text-gray-500">
         <p>Moderne IPTV Playlist &mdash; Optimiert für M3U Playlists mit A-Z Sortierung</p>
@@ -156,6 +194,7 @@
         let activeLetter = 'ALL';
         let searchQuery = '';
         let favorites = JSON.parse(localStorage.getItem('iptv_favorites') || '[]');
+        let hlsInstance = null;
 
         const channelsGrid = document.getElementById('channels-grid');
         const searchInput = document.getElementById('search-input');
@@ -170,6 +209,16 @@
         const resetLetterBtn = document.getElementById('reset-letter-btn');
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const sidebar = document.getElementById('sidebar');
+
+        // Modal Elements
+        const videoModal = document.getElementById('video-modal');
+        const modalVideo = document.getElementById('modal-video');
+        const modalTitle = document.getElementById('modal-title');
+        const modalCategory = document.getElementById('modal-category');
+        const modalLogoWrap = document.getElementById('modal-logo-wrap');
+        const modalLoader = document.getElementById('modal-loader');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        const modalFullscreenBtn = document.getElementById('modal-fullscreen-btn');
 
         // A-Z Buttons generieren
         function initAlphabetBar() {
@@ -382,7 +431,7 @@
                     `<div class="w-12 h-12 rounded-lg bg-indigo-600/20 flex items-center justify-center text-indigo-400"><i class="fa-solid fa-tv text-lg"></i></div>`;
 
                 html += `
-                    <div class="channel-card bg-dark-800 border border-gray-800 hover:border-indigo-500/50 rounded-2xl p-3.5 flex flex-col justify-between relative group cursor-pointer" onclick="window.open('${escapeQuotes(ch.url)}', '_blank')">
+                    <div class="channel-card bg-dark-800 border border-gray-800 hover:border-indigo-500/50 rounded-2xl p-3.5 flex flex-col justify-between relative group cursor-pointer" onclick="playChannel('${escapeQuotes(ch.url)}', '${escapeQuotes(ch.name)}', '${escapeQuotes(ch.category)}', '${escapeQuotes(ch.logo)}')">
                         <button onclick="event.stopPropagation(); toggleFavorite('${escapeQuotes(ch.id)}')" class="absolute top-3 right-3 text-gray-500 hover:text-amber-400 p-1.5 transition-colors ${isFav ? 'text-amber-400' : ''}">
                             <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-star"></i>
                         </button>
@@ -395,7 +444,7 @@
                         </div>
                         <button class="w-full mt-2 py-1.5 bg-dark-700 group-hover:bg-indigo-600 text-gray-300 group-hover:text-white rounded-xl text-xs font-medium flex items-center justify-center space-x-1.5 transition-colors">
                             <i class="fa-solid fa-play text-[10px]"></i>
-                            <span>Stream öffnen</span>
+                            <span>Stream abspielen</span>
                         </button>
                     </div>
                 `;
@@ -403,6 +452,71 @@
 
             channelsGrid.innerHTML = html;
         }
+
+        // Stream im Modal abspielen
+        window.playChannel = function(url, name, category, logo) {
+            modalTitle.textContent = name;
+            modalCategory.textContent = category;
+            
+            if (logo) {
+                modalLogoWrap.innerHTML = `<img src="${logo}" alt="" class="w-full h-full object-contain p-0.5" onerror="this.onerror=null; this.parentNode.innerHTML='<i class=\"fa-solid fa-tv text-gray-400 text-xs\"></i>';">`;
+            } else {
+                modalLogoWrap.innerHTML = `<i class="fa-solid fa-tv text-gray-400 text-xs"></i>`;
+            }
+
+            videoModal.classList.remove('hidden');
+            modalLoader.classList.remove('hidden');
+
+            if (Hls.isSupported() && (url.includes('.m3u8') || url.includes('m3u'))) {
+                if (hlsInstance) {
+                    hlsInstance.destroy();
+                }
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(url);
+                hlsInstance.attachMedia(modalVideo);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, () => {
+                    modalVideo.play().catch(e => console.log("Autoplay blockiviert:", e));
+                    modalLoader.classList.add('hidden');
+                });
+                hlsInstance.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) {
+                        modalLoader.classList.add('hidden');
+                    }
+                });
+            } else {
+                modalVideo.src = url;
+                modalVideo.load();
+                modalVideo.play().catch(e => console.log("Autoplay blockiviert:", e));
+                modalVideo.oncanplay = () => {
+                    modalLoader.classList.add('hidden');
+                };
+            }
+        }
+
+        // Modal schließen & Stream stoppen
+        function closePlayer() {
+            modalVideo.pause();
+            modalVideo.src = '';
+            if (hlsInstance) {
+                hlsInstance.destroy();
+                hlsInstance = null;
+            }
+            videoModal.classList.add('hidden');
+        }
+
+        closeModalBtn.addEventListener('click', closePlayer);
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) closePlayer();
+        });
+
+        // Vollbild-Button Logik
+        modalFullscreenBtn.addEventListener('click', () => {
+            if (modalVideo.requestFullscreen) {
+                modalVideo.requestFullscreen();
+            } else if (modalVideo.webkitRequestFullscreen) {
+                modalVideo.webkitRequestFullscreen();
+            }
+        });
 
         window.toggleFavorite = function(id) {
             if (favorites.includes(id)) {
