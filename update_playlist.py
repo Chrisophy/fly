@@ -86,6 +86,6 @@ if __name__ == "__main__":
             if res:
                 m3u_lines.append(res)
 
-    with open("playlist.m3u", "w", encoding="utf-8") as f:
+    with open("krautsalat", "w", encoding="utf-8") as f:
         f.write("\n".join(m3u_lines))
-    print("Playlist erfolgreich in playlist.m3u gespeichert.")
+    print("Playlist erfolgreich in krautsalat gespeichert.")
