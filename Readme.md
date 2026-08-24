@@ -1,1 +1,1 @@
-[🔄 Playlist jetzt aktualisieren](https://github.com/Chrisophy/fly/actions/workflows/main.yml)
+[![Update Salat](https://github.com/Chrisophy/fly/actions/workflows/main.yml/badge.svg)](https://github.com/Chrisophy/fly/actions/workflows/main.yml)
