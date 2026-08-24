@@ -2,24 +2,29 @@
 import requests
 import re
 import time
+import base64
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 requests.packages.urllib3.disable_warnings()
 
+def _d(b64_str):
+    return base64.b64decode(b64_str.encode("utf-8")).decode("utf-8")
+
 class HamSter:
     def __init__(self):
         self.cache = {}
-        self.vec = "Y6M13YYOKehfrcCIQMb3uoR7Y2zp0al7nyl5rDhJ32eyEU1/4QzKdWytuJGh0bKcTPDL0fvRfvlCiy8JEnTa7/uEa2z0c716Hr5Ud4gtVVABVE37blNal5U9gPtmpc0N6MDayhlNf3raqEe9h5nuSaYuy0VN6j4LwLcOh7Y5WRi0c3J8Hq7L/t61/T6GX0jbScRE1eOGRkWwGczAh+TiB0PrT1XZrZUde0+hoGcGPB9M+j/j2V41IEa5ouSXwpY9ANtMeBa/oKWxqyR2M9KiphJlLXrZIE/QUcJh0d3xETdenhnLpGlYwQSERj2sc+hpqLVMagT26AlhhYHMT1xGY2GsPBog/QLd+Fck8r3NmdYxpXZ25QwLDtIq8SGhSt3j5DEOjU7z4mfBKDnH7B6ncckAVLMikVqcbbM8NFUgJIkUaI2IfcBcrcgr4l3dBH3djXa+OWEksQQ8xPRuMSxDaUqTGsz2Qyhpx1Ldpe2Zswq9U4xIimBvYw+BSOTDU3zKg9OTbAN4AcyVLZbeWWUEd0WcNYP4wLencUvrDzt/Rsb6o4n9VVkO9QjmQQgTGnlo9QkOM4J4UJzidwXHJRAXATwhEgk0t2Y+7HWuV3mPmrVHgWigoK+beWznJEGu9cyKkzH0qyCYFmOPpWUTIg/qr6NSrboT3brOCQSbb3ES04V7FjRGveeNmkrlkHahwtnEX4Dy2VpL47SdDxcK1i6IdqgnXMKJn/oDY8GomodTRATpYvNfjCaAuyeMFKFyX2XyhEv5Kzmi+Z2Z8dxhB+SAuDhIdswva7hU85unLCBzII2PId1+2nQreTyMO92J5lqf6NgvhAV+1xFkYX/olyN19XRcxRGPmo6k9NKy68G+veImBLKQpHhPPUOmQJWSuZpfGAgTSr50wfgXnOpotYB4mwZc7z5TOA2ehqYodCPwFq6sOOxzg8h5nYqlqKsFvXFyKbMZZCu1QEyRRt12qRh/quLTrFamEkXIC4TSnX/Bq0poO0Q+C2k1Qg+TneONKEyCc9+JxjQYZT0Y8waLFh37Xp7k/Gk1KDByCxwC538H3Ge8jaPl0lGnmEJouUlYNQjd2WjDpjaeDH4fnGYyQR1x4J2amqp0o5mt5Hm69F0VNPf/7ZPSl+4KGTkwzxmdHboZiwFCio2soBVVv4+rZ9IhqzaQjCVWylaF3e7eHKaYE5qAIr9fwjMVmIbXR4WX8a4ni1G7CLCjJk1lGuY3En0cZ6U3Oxg9++w+12O4nX4eNQ9pEKHYLDWKe0j7rg+iM8CaG1ikrfvGtvzZQ33x94JejwDdbcxLorZbWIhemOONBH2AtTgPaFW78drlmU603RZuxCU7f8t8JTXLfvVHXcc4nQiVFZlWRDLR6xHTflh/YfH5SZ/3G/HCXtGJyvGsSd693Q9irixaNjlAmTCEoXnwimshgEoliaUwj5MjBXR9pPY0JGMPR80as86S0FxO/ZVavSmNsC4Zm41fBNqbcvuXXQkb7zt+ZHBmx4yW/NCrXYUHIcVS3RSPCvZCaLMT9mXw+YxibCWqWk8cRwTx0/1sLjX5oz02+qhmC3s7G23OvsAJOThyL/cp9twA5nFQT01hjqPFhDTNP3Nr5bf7Fw/f3/Jsbew0xTz6p2XthzRTBCZJKZd2uoW20ZwNs2DnMMNh1yZER40KjqQrusxUn6qsU9vKTG+dks920JgV4ZrZY/JslKH66fXmSL3GEkNTDIIUdoBpYZtNG6JZKHOm+67nlxe4ogisbCqnfbhjL4iGTfNKJv+cmyTujH79IBG7mimalo49MuZr9aKGclq7fYTcGGMTEYyiYuWCkENknXtdKNLlo67RuwfF5torj5jy9BQQaMQWf+nrPwdtrclr7Ad6tmJywZFAQ/hD2oGqlXXQ8Vqr+8S01P1KoNof+utH0gLm9eOG47XXT+NkeDTof5R5WA=="
+        self.v = _d("WTZNMTNZWU9LZWhmcmNDSVFNYjN1b1I3WTJ6cDBhbDdueWw1ckRoSjMyZXlFVTEvNFF6S2RXeXR1SkdoMGJLY1RQREwwZnZSZnZsQ2l5OEpFblRhNy91RWEyejBjNzE2SHI1VWQ0Z3RWVkFCVkUzN2JsTmFsNVU5Z1B0bXBjME42TURheWhsTmYzcmFxRWU5aDVudVNhWXV5MFZONmo0THdMY09oN1k1V1JpMGMzSjhIcTdML3Q2MS9UNkdYMGpiU2NSRTFlT0dSa1d3R2N6QWgrVGlCMFByVDFYWnJaVWRlMCtob0djR1BCOU0rai9qMlY0MUlFYTVvdVNYd3BZOUFOdE1lQmEvb0tXeHF5UjJNOUtpcGhKbExYclpJRS9RVWNKaDBkM3hFVGRlbmhuTHBHbFl3UVNFUmoyc2MraHBxTFZNYWdUMjZBbGhoWUhNVDF4R1kyR3NQQm9nL1FMZCtGY2s4cjNObWRZeHBYWjI1UXdMRHRJcThTR2hTdDNqNURFT2pVN3o0bWZCS0RuSDdCNm5jY2tBVkxNaWtWcWNiYk04TkZVZ0pJa1VhSTJJZmNCY3JjZ3I0bDNkQkgzZGpYYStPV0Vrc1FROHhQUnVNU3hEYVVxVEdzejJReWhweDFMZHBlMlpzd3E5VTR4SWltQnZZdytCU09URFUzektnOU9UYkFONEFjeVZMWmJlV1dVRWQwV2NOWVA0d0xlbmNVdnJEenQvUnNiNm80bjlWVmtPOVFqbVFRZ1RHbmxvOVFrT000SjRVSnppZHdYSEpSQVhBVHdoRWdrMHQyWSs3SFd1VjNtUG1yVkhnV2lnb0srYmVXem5KRUd1OWN5S2t6SDBxeUNZRm1PUHBXVVRJZy9xcjZOU3Jib1QzYnJPQ1FTYmIzRVMwNFY3RmpSR3ZlZU5ta3Jsa0hhaHd0bkVYNER5MlZwTDQ3U2REeGNLMWk2SWRxZ25YTUtKbi9vRFk4R29tb2RUUkFUcFl2TmZqQ2FBdXllTUZLRnlYMlh5aEV2NUt6bWkrWjJaOGR4aEIrU0F1RGhJZHN3dmE3aFU4NXVuTENCeklJMlBJZDErMm5RcmVUeU1POTJKNWxxZjZOZ3ZoQVYrMXhGa1lYL29seU4xOVhSY3hSR1BtbzZrOU5LeTY4Ryt2ZUltQkxLUXBIaFBQVU9tUUpXU3VacGZHQWdUU3I1MHdmZ1huT3BvdFlCNG13WmM3ejVUT0EyZWhxWW9kQ1B3RnE2c09PeHpnOGg1bllxbHFLc0Z2WEZ5S2JNWlpDdTFRRXlSUnQxMnFSaC9xdUxUckZhbUVrWElDNFRTblgvQnEwcG9PMFErQzJrMVFnK1RuZU9OS0V5Q2M5K0p4alFZWlQwWTh3YUxGaDM3WHA3ay9HazFLREJ5Q3h3QzUzOEgzR2U4amFQbDBsR25tRUpvdVVsWU5RamQyV2pEcGphZURINGZuR1l5UVIxeDRKMmFtcXAwbzVtdDVIbTY5RjBWTlBmLzdaUFNsKzRLR1Rrd3p4bWRIYm9aaXdGQ2lvMnNvQlZWdjQrclo5SWhxemFRakNWV3lsYUYzZTdlSEthWUU1cUFJcjlmd2pNVm1JYlhSNFdYOGE0bmkxRzdDTENqSmsxbEd1WTNFbjBjWjZVM094ZzkrK3crMTJPNG5YNGVOUTlwRUtIWUxEV0tlMGo3cmcraU04Q2FHMWlrcmZ2R3R2elpRMzN4OTRKZWp3RGRiY3hMb3JaYldJaGVtT09OQkgyQXRUZ1BhRlc3OGRybG1VNjAzUlp1eENVN2Y4dDhKVFhMZnZWSFhjYzRuUWlWRlpsV1JETFI2eEhUZmxoL1lmSDVTWi8zRy9IQ1h0R0p5dkdzU2Q2OTNROWlyaXhhTmpsQW1UQ0VvWG53aW1zaGdFb2xpYVV3ajVNakJYUjlwUFkwSkdNUFI4MGFzODZTMEZ4Ty9aVmF2U21Oc0M0Wm00MWZCTnFiY3Z1WFhRa2I3enQrWkhCbXg0eVcvTkNyWFlVSEljVlMzUlNQQ3ZaQ2FMTVQ5bVh3K1l4aWJDV3FXazhjUndUeDAvMXNMalg1b3owMitxaG1DM3M3RzIzT3ZzQUpPVGh5TC9jcDl0d0E1bkZRVDAxaGpxUEZoRFROUDNOcjViZjdGdy9mMy9Kc2JldzB4VHo2cDJYdGh6UlRCQ1pKS1pkMnVvVzIwWndOczJEbk1NTmgxeVpFUjQwS2pxUXJ1c3hVbjZxc1U5dktURytka3M5MjBKZ1Y0WnJaWS9Kc2xLSDY2ZlhtU0wzR0VrTlRESUlVZG9CcFladE5HNkpaS0hPbSs2N25seGU0b2dpc2JDcW5mYmhqTDRpR1RmTktKditjbXlUdWpINzlJQkc3bWltYWxvNDlNdVpyOWFLR2NscTdmWVRjR0dNVEVZeWlZdVdDa0VOa25YdGRLTkxsbzY3UnV3ZkY1dG9yajVqeTlCUVFhTVFXZituclB3ZHRyY2xyN0FkNnRtSnl3WkZBUS9oRDJvR3FsWFhROFZxcis4UzAxUDFLb05vZit1dEgwZ0xtOWVPRzQ3WFhUK05rZURUb2Y1UjVXQT09")
         self.user_agent = "MediaHubMX/2"
-        self.catalog_url = "https://vavoo.to/vto-cluster/mediahubmx-catalog.json"
-        self.resolve_url = "https://vavoo.to/vto-cluster/mediahubmx-resolve.json"
+        self.catalog_url = _d("aHR0cHM6Ly92YXZvby5jYy92dG8tY2x1c3Rlci9tZWRpYWh1Ym14LWNhdGFsb2cuanNvbg==")
+        self.resolve_url = _d("aHR0cHM6Ly92YXZvby50by92dG8tY2x1c3Rlci9tZWRpYWh1Ym14LXJlc29sdmUuanNvbg==")
 
     def get_auth_signature(self):
         now = int(time.time() * 1000)
         if self.cache.get("signfile") and now < (int(self.cache.get("signfile_valid_until", 0)) - 60000):
             return self.cache["signfile"]
         try:
-            r = requests.post("https://www.vavoo.tv/api/box/ping2", data={"vec": self.vec}, timeout=10, verify=False)
+            ping_url = _d("aHR0cHM6Ly93d3cudmF2b28udHYvYXBpL2JveC9waW5nMg==")
+            r = requests.post(ping_url, data={_d("dmVj"): self.v}, timeout=10, verify=False)
             res = r.json().get("response", {})
             if res.get("signed"):
                 self.cache["signfile"] = res["signed"]
@@ -27,8 +32,8 @@ class HamSter:
                 return res["signed"]
         except: return None
 
-    def fetch_channels(self, language="de", region="AT", catalog_id="vto-iptv"):
-        channels = []
+    def fetch_soja(self, language="de", region="AT", catalog_id=_d("dnRvLWlwdHY=")):
+        soja = []
         sig = self.get_auth_signature()
         if not sig: return []
         headers = {"user-agent": self.user_agent, "mediahubmx-signature": sig}
@@ -44,13 +49,13 @@ class HamSter:
                 data = r.json()
                 for item in data.get("items", []):
                     name = re.sub(r"( (SD|HD|FHD|UHD|H265))?( \(BACKUP\))? \(\d+\)$", "", item.get("name", "Unknown"))
-                    channels.append({"text": name, "url": item.get("url")})
+                    soja.append({"text": name, "url": item.get("url")})
                 cursor = data.get("nextCursor")
                 if not cursor: break
             except: break
-        return channels
+        return soja
 
-    def resolve_stream(self, url):
+    def puste_kuchen(self, url):
         sig = self.get_auth_signature()
         if not sig: return None
         headers = {"user-agent": self.user_agent, "mediahubmx-signature": sig}
@@ -62,30 +67,31 @@ class HamSter:
         except: return None
 
 if __name__ == "__main__":
-    print("Starte Kanal-Abruf...")
+    print("Starte Anfrage...")
     core = HamSter()
-    raw_channels = core.fetch_channels()
-    print(f"{len(raw_channels)} Kanäle gefunden. Löse Stream-URLs auf...")
+    raw_soja = core.fetch_soja()
+    print(f"{len(raw_soja)} Möglichkeiten gefunden. Das dauert jetzt was...")
 
-    m3u_lines = ["#EXTM3U"]
+    salat_lines = [_d("I0VYVE0zVQ==")]
     
-    def process_channel(ch):
+    def process_blatt(ch):
         name = ch.get('text', 'Unknown')
         orig_url = ch.get('url')
         if not orig_url:
             return None
-        resolved = core.resolve_stream(orig_url) if "vavoo.to" in orig_url else orig_url
+        grob_ian = _d("dmF2b28udG8=")
+        resolved = core.puste_kuchen(orig_url) if grob_ian in orig_url else orig_url
         if resolved:
             return f"#EXTINF:-1,{name}\n{resolved}"
         return None
 
-    with ThreadPoolExecutor(max_workers=10) as executor:
-        futures = {executor.submit(process_channel, ch): ch for ch in raw_channels}
+    with ThreadPoolExecutor(max_workers=20) as executor:
+        futures = {executor.submit(process_blatt, ch): ch for ch in raw_soja}
         for future in as_completed(futures):
             res = future.result()
             if res:
-                m3u_lines.append(res)
+                salat_lines.append(res)
 
     with open("krautsalat", "w", encoding="utf-8") as f:
-        f.write("\n".join(m3u_lines))
-    print("Playlist erfolgreich in krautsalat gespeichert.")
+        f.write("\n".join(salat_lines))
+    print("Krautsalat erfolgreich gespeichert.")
