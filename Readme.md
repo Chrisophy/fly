@@ -2,4 +2,4 @@
 (https://github.com/Chrisophy/fly/actions/workflows/main.yml)
 
 [![Update Salat](https://chrisophy.github.io/fly/index.html/badge.svg]
-(https://github.com/Chrisophy/fly/actions/workflows/main.yml](https://chrisophy.github.io/fly/index.html)
+(https://chrisophy.github.io/fly/index.html)
