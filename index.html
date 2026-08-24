@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IPTV Stream Hub</title>
-    <!-- Tailwind CSS -->
+    <title>ITS POSSIBLE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -23,9 +22,7 @@
             }
         }
     </script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HLS.js für flüssige Stream-Wiedergabe -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         ::-webkit-scrollbar { width: 8px; height: 8px; }
@@ -38,7 +35,6 @@
 </head>
 <body class="bg-dark-900 text-gray-100 min-h-screen flex flex-col font-sans select-none">
 
-    <!-- Header -->
     <header class="bg-dark-800 border-b border-gray-800 sticky top-0 z-50 px-4 py-3 shadow-lg">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
             <div class="flex items-center space-x-3 w-full md:w-auto justify-between md:justify-start">
@@ -47,8 +43,8 @@
                         <i class="fa-solid fa-tv text-lg"></i>
                     </div>
                     <div>
-                        <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">ITS POSSIBLE STREAM</h1>
-                        <p class="text-xs text-gray-400" id="channel-count">Lade Playlist...</p>
+                        <h1 class="text-lg font-bold tracking-tight bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">ITS POSSIBLE</h1>
+                        <p class="text-xs text-gray-400" id="channel-count">Lade Liste...</p>
                     </div>
                 </div>
                 <button id="mobile-menu-btn" class="md:hidden text-gray-400 hover:text-white p-2">
@@ -56,7 +52,6 @@
                 </button>
             </div>
 
-            <!-- Suchfeld -->
             <div class="w-full md:w-96 relative">
                 <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-400">
                     <i class="fa-solid fa-magnifying-glass"></i>
@@ -65,7 +60,6 @@
                     class="w-full pl-10 pr-4 py-2 bg-dark-900 border border-gray-700 rounded-xl text-sm focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all text-gray-200 placeholder-gray-500">
             </div>
 
-            <!-- Steuerung -->
             <div class="flex items-center space-x-2 w-full md:w-auto justify-end">
                 <button id="reload-btn" class="px-3 py-2 bg-dark-700 hover:bg-dark-600 text-gray-300 rounded-xl text-sm font-medium flex items-center space-x-2 transition-colors border border-gray-700">
                     <i class="fa-solid fa-rotate"></i>
@@ -80,10 +74,8 @@
         </div>
     </header>
 
-    <!-- Hauptbereich -->
     <div class="max-w-7xl mx-auto w-full flex-1 flex flex-col md:flex-row p-4 gap-6">
         
-        <!-- Sidebar (Kategorien) -->
         <aside id="sidebar" class="w-full md:w-64 bg-dark-800 border border-gray-800 rounded-2xl p-4 flex-shrink-0 hidden md:flex flex-col space-y-6 h-fit md:sticky md:top-20">
             <div>
                 <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400 px-3 mb-3">Filter</h3>
@@ -105,10 +97,8 @@
             </div>
         </aside>
 
-        <!-- Content -->
         <main class="flex-1 flex flex-col space-y-4">
             
-            <!-- Alphabetische Sortierung (#, A-Z) -->
             <div class="bg-dark-800 border border-gray-800 rounded-2xl p-3 shadow-md">
                 <div class="flex items-center justify-between mb-2 px-1">
                     <span class="text-xs font-semibold uppercase tracking-wider text-gray-400">
@@ -122,7 +112,6 @@
                 </div>
             </div>
 
-            <!-- Header der Senderliste -->
             <div class="flex items-center justify-between px-1">
                 <div class="flex items-center space-x-2">
                     <h2 id="current-view-title" class="text-base font-bold text-gray-200">Alle Sender</h2>
@@ -130,10 +119,8 @@
                 </div>
             </div>
 
-            <!-- Sender Raster -->
             <div id="channels-grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5"></div>
 
-            <!-- Leer-Zustand -->
             <div id="empty-state" class="hidden flex flex-col items-center justify-center py-16 text-center bg-dark-800/50 border border-gray-800 rounded-2xl">
                 <div class="w-16 h-16 rounded-full bg-dark-700 flex items-center justify-center text-gray-500 text-2xl mb-4">
                     <i class="fa-solid fa-triangle-exclamation"></i>
@@ -144,10 +131,8 @@
         </main>
     </div>
 
-    <!-- Video Modal / Overlay Player -->
     <div id="video-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex flex-col items-center justify-center p-2 sm:p-4">
         <div class="w-full max-w-5xl bg-dark-800 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl flex flex-col">
-            <!-- Modal Header -->
             <div class="bg-dark-700 px-4 py-3 flex items-center justify-between border-b border-gray-700">
                 <div class="flex items-center space-x-3">
                     <div id="modal-logo-wrap" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center overflow-hidden">
@@ -167,7 +152,6 @@
                     </button>
                 </div>
             </div>
-            <!-- Video Container -->
             <div class="relative aspect-video bg-black flex items-center justify-center">
                 <video id="modal-video" class="w-full h-full object-contain" controls autoplay playsinline></video>
                 <div id="modal-loader" class="absolute inset-0 flex items-center justify-center bg-black/70 backdrop-blur-sm">
@@ -180,12 +164,10 @@
         </div>
     </div>
 
-    <!-- Footer -->
     <footer class="bg-dark-800 border-t border-gray-800 py-4 mt-8 text-center text-xs text-gray-500">
         <p>ITS POSSIBLE &mdash; Viel Spaß! </p>
     </footer>
 
-    <!-- JavaScript Logik -->
     <script>
         const DEFAULT_M3U_URL = "https://raw.githubusercontent.com/Chrisophy/fly/refs/heads/main/krautsalat";
         
@@ -210,7 +192,6 @@
         const mobileMenuBtn = document.getElementById('mobile-menu-btn');
         const sidebar = document.getElementById('sidebar');
 
-        // Modal Elements
         const videoModal = document.getElementById('video-modal');
         const modalVideo = document.getElementById('modal-video');
         const modalTitle = document.getElementById('modal-title');
@@ -220,7 +201,6 @@
         const closeModalBtn = document.getElementById('close-modal-btn');
         const modalFullscreenBtn = document.getElementById('modal-fullscreen-btn');
 
-        // A-Z Buttons generieren
         function initAlphabetBar() {
             for (let i = 65; i <= 90; i++) {
                 let char = String.fromCharCode(i);
@@ -262,7 +242,6 @@
 
         mobileMenuBtn.addEventListener('click', () => sidebar.classList.toggle('hidden'));
 
-        // Playlist laden (mit Fallback auf CORS-Proxy falls nötig)
         async function loadPlaylist(url) {
             channelCountEl.textContent = "Lade Playlist...";
             try {
@@ -284,7 +263,6 @@
             }
         }
 
-        // Robuster M3U Parser ohne RegEx-Zeilenumbruch-Probleme
         function parseM3U(content) {
             const normalized = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
             const lines = normalized.split('\n');
@@ -453,7 +431,6 @@
             channelsGrid.innerHTML = html;
         }
 
-        // Stream im Modal abspielen
         window.playChannel = function(url, name, category, logo) {
             modalTitle.textContent = name;
             modalCategory.textContent = category;
@@ -493,7 +470,6 @@
             }
         }
 
-        // Modal schließen & Stream stoppen
         function closePlayer() {
             modalVideo.pause();
             modalVideo.src = '';
@@ -509,7 +485,6 @@
             if (e.target === videoModal) closePlayer();
         });
 
-        // Vollbild-Button Logik
         modalFullscreenBtn.addEventListener('click', () => {
             if (modalVideo.requestFullscreen) {
                 modalVideo.requestFullscreen();
